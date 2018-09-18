@@ -31,7 +31,7 @@ const { stringify: JSONstringify } = JSON;
 const { encodeURIComponent } = global;
 
 // eslint-disable-next-line no-control-regex
-const HTML_SPECIAL = /[\x00<>&"'+=@{]/g;
+const HTML_SPECIAL = /[\x00<>&"'+=@`{]/g;
 const HTML_ESCS = {
   __proto__: null,
   '\x00': '',
@@ -45,6 +45,8 @@ const HTML_ESCS = {
   '=': '&#61;',
   // Conditional compilation.
   '@': '&#64;',
+  // IE non-standard attribute delimiter.
+  '`': '&#96;',
   // Client-side templating.
   '{': '&#123;',
 };
