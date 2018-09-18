@@ -170,9 +170,9 @@ such as, assignment to the innerHTML DOM property, or interpolation into
 a HTML template in HTML PC_DATA context, in the sense that the use will not
 result in a Cross-Site-Scripting vulnerability.
 
-Instances must be created by Mintable.minterFor(TrustedHTML).
+Instances must be created by `Mintable.minterFor(TrustedHTML)`.
 
-When checking types, use Mintable.verifierFor(TrustedHTML) and do not rely on
+When checking types, use `Mintable.verifierFor(TrustedHTML)` and do not rely on
 `instanceof`.
 
 
@@ -188,9 +188,9 @@ during testing. Given the wide number of non-RFC compliant URLs in use,
 stricter validation could prevent some applications from being able to use
 this type.
 
-Instances must be created by Mintable.minterFor(TrustedResourceURL).
+Instances must be created by `Mintable.minterFor(TrustedResourceURL)`.
 
-When checking types, use Mintable.verifierFor(TrustedResourceURL) and do
+When checking types, use `Mintable.verifierFor(TrustedResourceURL)` and do
 not rely on `instanceof`.
 
 ### TrustedScript                      <a name="hdr-trustedscript"></a>
@@ -210,9 +210,9 @@ sanitization and/or validation into the right location in the script, such
 that it is highly constrained in its effect (for example, it had to match a
 set of whitelisted words).
 
-Instances must be created by Mintable.minterFor(TrustedScript).
+Instances must be created by `Mintable.minterFor(TrustedScript)`.
 
-When checking types, use Mintable.verifierFor(TrustedScript) and do
+When checking types, use `Mintable.verifierFor(TrustedScript)` and do
 not rely on `instanceof`.
 
 ### TrustedURL                         <a name="hdr-trustedurl"></a>
@@ -253,7 +253,7 @@ const makeTrustedHTML = require.keys.unbox(
 This boilerplate can be tiresome, but this should only happen in an applications
 secure kernel.
 
-Do not grant access to makeTrustedHTML widely.  That defeats the purpose of
+Do not grant access to `makeTrustedHTML` widely.  That defeats the purpose of
 guarding constructors to minimize the amount of code that could result in a
 security vulnerability.
 
@@ -283,7 +283,7 @@ if (TrustedHTML.is(x)) {
 
 ### class TrustedHTML                  <a name="hdr-class-trustedhtml"></a>
 
-The contract type for TrustedHTML.  See above for the contract.
+The contract type for TrustedHTML.  See [contract](#hdr-trustedhtml) above.
 
 ### TrustedHTML.concat                 <a name="hdr-trustedhtml-concat"></a>
 
@@ -335,29 +335,59 @@ Given a *TrustedScript*, returns a `TrustedHTML` instance like `<script>...</scr
 May also take a second options argument that allows specifying:
 
 *  `type`:  May be "module" to specify that the src is an ES6 module not a script
-*  `defer`:
-*  `async`:
-*  `nonce`:  Unescaped text of a Conent-Security-Policy nonce.
+*  `defer`: If truthy, the output script element has the defer attribute.
+*  `async`: If truthy, the output script element has the async attribute.
+*  `nonce`: Unescaped text of a Conent-Security-Policy nonce.
 
 ### class TrustedResourceURL           <a name="hdr-class-trustedresourceurl"></a>
 
-TODO
+The contract type for TrustedResourceURL.  See [contract](#hdr-trustedresourceurl) above.
 
 ### TrustedResourceURL.fromScript      <a name="hdr-trustedresourceurl-fromscript"></a>
 
-TODO
+```js
+const { TrustedResourceURL } = require('web-contract-types');
+
+TrustedResourceURL.fromScript(myTrustedScript)
+// ~ data:text/javascript,...
+```
+
+If the input is a *TrustedScript* returns a *TrustedResourceUrl* with scheme `data:`,
+content type text/javascript, and a data segment that is the script's content.
+
+If the input is not a *TrustedScript*, throws a *TypeError*.
 
 ### class TrustedScript                <a name="hdr-class-trustedscript"></a>
 
-TODO
+The contract type for TrustedScript.  See [contract](#hdr-trustedscript) above.
 
 ### TrustedScript.expressionFromJSON   <a name="hdr-trustedscript-expressionfromjson"></a>
 
-TODO
+```js
+const { TrustedScript } = require('web-contract-types');
+
+const dataObject = { "foo": [ "bar" ] };
+
+TrustedScript.expressionFromJSON(dataObject)
+// ~ ({ "foo", [ "bar" ] })
+```
+
+Forwards its arguments to `JSON.stringify` and returns a *TrustedScript*
+whose content is a parenthesized JavaScript expression that produces
+similar data.
+
+It forwards all arguments, so accepts the same [optional arguments][JSON args]
+as `JSON.stringify`.
+
+*  value
+*  replacer
+*  space
+
+It throws an exception when `JSON.stringify` does -- for example, reference cycles.
 
 ### class TrustedURL                   <a name="hdr-class-trustedurl"></a>
 
-TODO
+The contract type for TrustedURL.  See [contract](#hdr-trustedurl) above.
 
 ### TrustedURL.innocuousURL            <a name="hdr-trustedurl-innocuousurl"></a>
 
@@ -390,3 +420,4 @@ argument unchanged, or if that argument is falsey, returns `TrustedURL.innocuous
 
 
 [Mintable]: https://npmjs.com/package/node-sec-patterns
+[JSON args]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Parameters
