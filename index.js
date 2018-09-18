@@ -28,6 +28,7 @@ const { exec: reExec, test: reTest } = RegExp.prototype;
 const { replace } = String.prototype;
 
 const { stringify: JSONstringify } = JSON;
+const { encodeURIComponent } = global;
 
 // eslint-disable-next-line no-control-regex
 const HTML_SPECIAL = /[\x00<>&"'+=@{]/g;
@@ -191,7 +192,7 @@ function minterFor(TrustedType) {
 const mintTrustedHTML = minterFor(TrustedHTML);
 const isTrustedHTML = Mintable.verifierFor(TrustedHTML);
 
-// const mintTrustedResourceURL = minterFor(TrustedResourceURL);
+const mintTrustedResourceURL = minterFor(TrustedResourceURL);
 const isTrustedResourceURL = Mintable.verifierFor(TrustedResourceURL);
 
 const mintTrustedScript = minterFor(TrustedScript);
@@ -200,8 +201,6 @@ const isTrustedScript = Mintable.verifierFor(TrustedScript);
 const mintTrustedURL = minterFor(TrustedURL);
 const isTrustedURL = Mintable.verifierFor(TrustedURL);
 
-
-let emptyHtml = null;
 
 defineProperties(
   TrustedHTML,
@@ -222,13 +221,7 @@ defineProperties(
     },
     'empty': {
       enumerable: true,
-      // eslint-disable-next-line func-name-matching
-      get: function empty() {
-        if (!emptyHtml) {
-          emptyHtml = freeze(TrustedHTML.concat());
-        }
-        return emptyHtml;
-      },
+      value: freeze(mintTrustedHTML('')),
     },
     'escape': {
       enumerable: true,
@@ -256,16 +249,16 @@ defineProperties(
           html += ' defer="defer"';
         }
         if (isTrustedResourceURL(src)) {
-          html += ` src="${ htmlEscapeString(src.content) }"`;
-        }
-        html += '>';
-        if (isTrustedScript(src)) {
+          html += ` src="${ htmlEscapeString(src.content) }">`;
+        } else if (isTrustedScript(src)) {
           const { content } = src;
           if (apply(reTest, SCRIPT_OR_CDATA_END, [ content ])) {
             throw new Error(`TrustedScript is not embeddable in HTML ${ content }`);
           }
           // Use CDATA to avoid mismatches in foreign content parsing in <svg>.
-          html += `//<![CDATA[\n${ content }\n//]]>`;
+          html += `>//<![CDATA[\n${ content }\n//]]>`;
+        } else {
+          throw new TypeError('Expected either a TrustedResourceURL or a TrustedScript for src');
         }
         html += '</script>';
         return mintTrustedHTML(html);
@@ -280,11 +273,27 @@ defineProperties(
 defineProperties(
   TrustedResourceURL,
   {
+    'fromScript': {
+      enumerable: true,
+      // eslint-disable-next-line func-name-matching
+      value: function fromScript(script) {
+        if (isTrustedScript(script)) {
+          return mintTrustedResourceURL(
+            // UTF-8 since that's the output encoding used by encodeURIComponent
+            // Hash at the ends makes it more concatenation safe.
+            `data:text/javascript;charset=UTF-8,${ encodeURIComponent(script.content) }#`);
+        }
+        throw new TypeError('Expected TrustedScript');
+      },
+    },
     'is': {
       enumerable: true,
       value: isTrustedResourceURL,
     },
   });
+
+const LS_GLOBAL = /\u2028/g;
+const PS_GLOBAL = /\u2029/g;
 
 defineProperties(
   TrustedScript,
@@ -293,7 +302,11 @@ defineProperties(
       enumerable: true,
       // eslint-disable-next-line func-name-matching
       value: function expressionFromJSON(...args) {
-        return mintTrustedScript(`(${ JSONstringify(...args) })`);
+        const json = JSONstringify(...args);
+        // JSON is not a subset of JS because of these two LineTerminator codepoints.
+        let javascript = apply(replace, json, [ LS_GLOBAL, '\\u2028' ]);
+        javascript = apply(replace, javascript, [ PS_GLOBAL, '\\u2029' ]);
+        return mintTrustedScript(`(${ javascript })`);
       },
     },
     'is': {
@@ -310,30 +323,25 @@ const SCHEME_AND_REST = /^[\t\n\f\r ]*([^/:?#]+:)?([\s\S]*?)[\t\n\f\r ]*$/;
 // Use a minter if you need a TrustedURL that is not on this list.
 const SAFE_SCHEME_WHITELIST = {
   __proto__: null,
-  'http': true,
-  'https': true,
-  'mailto': true,
-  'tel': true,
+  'http:': true,
+  'https:': true,
+  'mailto:': true,
+  'tel:': true,
 };
-let innocuousTrustedURL = null;
+
+const innocuousURL = freeze(mintTrustedURL('about:invalid#TrustedURL'));
 
 defineProperties(
   TrustedURL,
   {
     'innocuousURL': {
       enumerable: true,
-      // eslint-disable-next-line func-name-matching
-      get: function innocuousURL() {
-        if (!innocuousTrustedURL) {
-          innocuousTrustedURL = freeze(mintTrustedURL('about:invalid#TrustedURL'));
-        }
-        return innocuousTrustedURL;
-      },
+      value: innocuousURL,
     },
     'sanitize': {
       enumerable: true,
       // eslint-disable-next-line func-name-matching
-      value: function sanitize(val, fallback) {
+      value: function sanitize(val, fallback = innocuousURL) {
         if (isTrustedURL(val)) {
           return val;
         }
@@ -341,15 +349,15 @@ defineProperties(
           return mintTrustedURL(val);
         }
         const str = `${ val }`;
-        const [ scheme, schemeSpecificPart ] = apply(SCHEME_AND_REST, reExec, [ str ]);
+        const [ , scheme, schemeSpecificPart ] = apply(reExec, SCHEME_AND_REST, [ str ]);
         if (!scheme) {
-          return mintTrustedURL(schemeSpecificPart || '');
+          return mintTrustedURL(schemeSpecificPart);
         }
         const canonScheme = scheme.toLowerCase();
         if (SAFE_SCHEME_WHITELIST[canonScheme]) {
-          return mintTrustedURL(`${ canonScheme }:${ schemeSpecificPart }`);
+          return mintTrustedURL(`${ canonScheme }${ schemeSpecificPart }`);
         }
-        return fallback || TrustedURL.innocuousUrl;
+        return fallback;
       },
     },
     'is': {

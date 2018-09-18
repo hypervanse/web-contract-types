@@ -55,6 +55,12 @@
       }
     },
     "rules": {
+      "no-confusing-arrow": [
+        "error",
+        {
+          "allowParens": true
+        }
+      ],
       "no-warning-comments": [
         "error",
         {

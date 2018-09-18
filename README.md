@@ -343,6 +343,10 @@ May also take a second options argument that allows specifying:
 
 TODO
 
+### TrustedResourceURL.fromScript
+
+TODO
+
 ### class TrustedScript                <a name="hdr-class-trustedscript"></a>
 
 TODO
