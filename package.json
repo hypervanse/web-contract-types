@@ -3,6 +3,9 @@
   "version": "1.0.0-alpha",
   "description": "Contract types for common web application languages: HTML, JS, CSS, URL",
   "main": "index.js",
+  "files": [
+    "index.js"
+  ],
   "dependencies": {
     "node-sec-patterns": "^2.0.3",
     "template-tag-common": "^4.0.2"
