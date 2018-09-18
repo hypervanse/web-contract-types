@@ -7,9 +7,11 @@ foreach my $path (@ARGV) {
     my %ids = ();
     my @toc = ();
     my $content = "";
+    my $originalContent = "";
 
     my $lastDepth = 0;
     while (<$IN>) {
+        my $originalLine = $_;
         if (m/^(\#{2,})/) {
             # Maybe autogenerate id
             my $headerText = $';
@@ -43,6 +45,7 @@ foreach my $path (@ARGV) {
             die "$path:$.: Heading lacks identifier";
         }
         $content .= $_;
+        $originalContent .= $originalLine;
     }
 
     close ($IN) or die "$path: $!";
@@ -52,10 +55,12 @@ foreach my $path (@ARGV) {
         die "$path: Cannot find <!-- TOC --> delimited space for the table of contents";
     }
 
-    my $outpath = "$path.out";
-    open (my $OUT, ">$outpath") or die "$path: $!";
-    print $OUT "$content";
-    close ($OUT) or die "$path: $!";
+    if ($originalContent ne $content) {
+        my $outpath = "$path.out";
+        open (my $OUT, ">$outpath") or die "$path: $!";
+        print $OUT "$content";
+        close ($OUT) or die "$path: $!";
 
-    rename($outpath, $path) or die "$path: Failed to rename $outpath to $path  $!";
+        rename($outpath, $path) or die "$path: Failed to rename $outpath to $path  $!";
+    }
 }
