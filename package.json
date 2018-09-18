@@ -22,7 +22,7 @@
     "url": "git+https://github.com/mikesamuel/web-contract-types.git"
   },
   "keywords": [
-    "xecurity",
+    "security",
     "XSS",
     "sec-roadmap",
     "typed-string"
