@@ -58,8 +58,7 @@ setup to guard which modules can create values that meet a contract.
 This helps an application team, in conjunction with security specialists,
 keep a bound on how much code needs review to check that contracts hold.
 
-[npmjs/package/node-sec-patterns][] has the authoritative docs, but the
-applications main file should do, as early as possible, something like:
+The applications main file should do, as early as possible, something like:
 
 ```js
 // In application main file.
@@ -123,7 +122,7 @@ future development practices:
 $ node -e 'console.log(JSON.stringify(require("web-contract-types/package.json").mintable.selfNominate, null, 2))'
 ```
 
-See [npmjs/package/node-sec-patterns][] for more details.
+See [Mintable][] for more details.
 
 ### For library authors                <a name="hdr-for-library-authors"></a>
 
@@ -154,7 +153,7 @@ verifier pass that type's contract, and are not responsible for
 failure to preserve a contract given a verified input that does not
 meet its type contract.
 
-See [npmjs/package/node-sec-patterns][] for more details.
+See [Mintable][] for more details.
 
 ## Contracts                           <a name="hdr-contracts"></a>
 
@@ -258,7 +257,7 @@ Do not grant access to makeTrustedHTML widely.  That defeats the purpose of
 guarding constructors to minimize the amount of code that could result in a
 security vulnerability.
 
-See [npmjs/package/node-sec-patterns][] for more details.
+See [Mintable][] for more details.
 
 ## Verifying Trusted values            <a name="hdr-verifying-trusted-values"></a>
 
@@ -388,3 +387,6 @@ Given a *TrustedURL* returns its input unchanged.
 
 If the input does not pass one of the given conditions, returns its second
 argument unchanged, or if that argument is falsey, returns `TrustedURL.innocuousURL`.
+
+
+[Mintable]: https://npmjs.com/package/node-sec-patterns
