@@ -33,6 +33,7 @@ Contract types for common web application languages: HTML, JavaScript, URLs.
    *  [TrustedHTML.escape](#hdr-trustedhtml-escape)
    *  [TrustedHTML.fromScript](#hdr-trustedhtml-fromscript)
    *  [class TrustedResourceURL](#hdr-class-trustedresourceurl)
+   *  [TrustedResourceURL.fromScript](#hdr-trustedresourceurl-fromscript)
    *  [class TrustedScript](#hdr-class-trustedscript)
    *  [TrustedScript.expressionFromJSON](#hdr-trustedscript-expressionfromjson)
    *  [class TrustedURL](#hdr-class-trustedurl)
@@ -343,7 +344,7 @@ May also take a second options argument that allows specifying:
 
 TODO
 
-### TrustedResourceURL.fromScript
+### TrustedResourceURL.fromScript      <a name="hdr-trustedresourceurl-fromscript"></a>
 
 TODO
 
