@@ -9,7 +9,7 @@
 [![Install Size](https://packagephobia.now.sh/badge?p=web-contract-types)](https://packagephobia.now.sh/result?p=web-contract-types)
 [![Known Vulnerabilities](https://snyk.io/test/github/mikesamuel/web-contract-types/badge.svg?targetFile=package.json)](https://snyk.io/test/github/mikesamuel/web-contract-types?targetFile=package.json)
 
-Contract types for common web application languages: HTML, JavaScript, URLs.
+Security contract types for common web application languages: HTML, JavaScript, URLs.
 
 <!-- scripts/make-md-toc.pl replaces the below and test/check-markdown.js keeps this up-to-date. -->
 
@@ -309,7 +309,7 @@ TrustedHTML.empty;
 ### TrustedHTML.escape                 <a name="hdr-trustedhtml-escape"></a>
 
 Given a string, returns a *TrustedHTML* instance that represents a text
-node with the same textContent.
+node with that textContent.
 
 Given a TrustedHTML instance, returns it unchanged.
 
