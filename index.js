@@ -335,7 +335,7 @@ defineProperties(
     },
     'innocuousScript': {
       enumerable: true,
-      value: freeze(mintTrustedScript('[null][0]/*TrustedScript*/')),
+      value: freeze(mintTrustedScript('[][0]/*TrustedScript*/')),
     },
     'is': {
       enumerable: true,
