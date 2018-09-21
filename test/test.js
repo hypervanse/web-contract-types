@@ -44,6 +44,14 @@ describe('TrustedHTML', () => {
     expect(TrustedHTML.is(TrustedHTML.empty)).to.equal(true);
     expect(TrustedHTML.is('')).to.equal(false);
   });
+  it('toJSON', () => {
+    expect(JSON.stringify(TrustedHTML.empty)).to.equal('""');
+    expect(JSON.stringify(TrustedHTML.escape('foo'))).to.equal('"foo"');
+  });
+  it('toString', () => {
+    expect(String(TrustedHTML.empty)).to.equal('');
+    expect(String(TrustedHTML.escape('foo'))).to.equal('foo');
+  });
   describe('concat', () => {
     it('x 0', () => {
       const got = TrustedHTML.concat();
@@ -217,6 +225,9 @@ describe('TrustedResourceURL', () => {
     expect(TrustedResourceURL.is('https://example.com/js.js')).to.equal(false);
     expect(TrustedResourceURL.is(mintTrustedResourceURL('https://example.com/js.js'))).to.equal(true);
   });
+  it('toString', () => {
+    expect(String(mintTrustedResourceURL('/path'))).to.equal('/path');
+  });
 });
 
 describe('TrustedScript', () => {
@@ -245,6 +256,9 @@ describe('TrustedScript', () => {
   it('is', () => {
     expect(TrustedScript.is('alert(1);')).to.equal(false);
     expect(TrustedScript.is(mintTrustedScript('alert(1);'))).to.equal(true);
+  });
+  it('toString', () => {
+    expect(String(mintTrustedScript(' (1 + 1) '))).to.equal(' (1 + 1) ');
   });
 });
 
@@ -343,5 +357,8 @@ describe('TrustedURL', () => {
       expect(TrustedURL.is(url)).to.equal(true);
       expect(url.content).to.equal(str);
     });
+  });
+  it('toString', () => {
+    expect(String(mintTrustedResourceURL('./main.js'))).to.equal('./main.js');
   });
 });

@@ -60,6 +60,22 @@ function htmlEscapeString(str) {
 
 const SCRIPT_OR_CDATA_END = /<\/script|\]\]>/i;
 
+
+class TrustedType extends TypedString {}
+defineProperties(
+  TrustedType.prototype,
+  {
+    'toJSON': {
+      // eslint-disable-next-line func-name-matching
+      value: function toJSON() {
+        // Pug templates depends on this particular behavior
+        // since pug.attr coerces object values to JSON internally.
+        return this.content;
+      },
+    },
+  });
+
+
 /**
  * A string that is safe to use in HTML context in DOM APIs and HTML documents.
  *
@@ -77,7 +93,7 @@ const SCRIPT_OR_CDATA_END = /<\/script|\]\]>/i;
  * When checking types, use Mintable.verifierFor(TrustedHTML) and do not rely on
  * {@code instanceof}.
  */
-class TrustedHTML extends TypedString {}
+class TrustedHTML extends TrustedType {}
 
 
 /**
@@ -96,7 +112,7 @@ class TrustedHTML extends TypedString {}
  * When checking types, use Mintable.verifierFor(TrustedResourceURL) and do
  * not rely on {@code instanceof}.
  */
-class TrustedResourceURL extends TypedString {}
+class TrustedResourceURL extends TrustedType {}
 
 
 /**
@@ -120,7 +136,7 @@ class TrustedResourceURL extends TypedString {}
  * When checking types, use Mintable.verifierFor(TrustedScript) and do
  * not rely on {@code instanceof}.
  */
-class TrustedScript extends TypedString {}
+class TrustedScript extends TrustedType {}
 
 
 /**
@@ -142,7 +158,7 @@ class TrustedScript extends TypedString {}
  * When checking types, use Mintable.verifierFor(TrustedURL) and do not rely on
  * {@code instanceof}.
  */
-class TrustedURL extends TypedString {}
+class TrustedURL extends TrustedType {}
 
 
 defineProperties(TrustedHTML, {
@@ -171,21 +187,21 @@ defineProperties(TrustedURL, {
 });
 
 
-function minterFor(TrustedType) {
+function minterFor(TrustedTypeT) {
   let warned = false;
   function singleWarningFallback(x) {
     if (!warned) {
       warned = true;
       // eslint-disable-next-line no-console
       console.warning(
-        `web-contract-types not authorized to create ${ TrustedType.name
+        `web-contract-types not authorized to create ${ TrustedTypeT.name
         }.  Maybe check your mintable grants used to initialize node-sec-patterns.`);
     }
     return `${ x }`;
   }
 
   return require.keys.unbox(
-    Mintable.minterFor(TrustedType),
+    Mintable.minterFor(TrustedTypeT),
     () => true,
     singleWarningFallback);
 }
@@ -272,6 +288,8 @@ defineProperties(
     },
   });
 
+const innocuousResourceURL = freeze(mintTrustedURL('about:invalid#TrustedResourceURL'));
+
 defineProperties(
   TrustedResourceURL,
   {
@@ -287,6 +305,10 @@ defineProperties(
         }
         throw new TypeError('Expected TrustedScript');
       },
+    },
+    'innocuousURL': {
+      enumerable: true,
+      value: innocuousResourceURL,
     },
     'is': {
       enumerable: true,
@@ -310,6 +332,10 @@ defineProperties(
         javascript = apply(replace, javascript, [ PS_GLOBAL, '\\u2029' ]);
         return mintTrustedScript(`(${ javascript })`);
       },
+    },
+    'innocuousScript': {
+      enumerable: true,
+      value: freeze(mintTrustedScript('[null][0]/*TrustedScript*/')),
     },
     'is': {
       enumerable: true,
