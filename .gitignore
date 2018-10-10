@@ -1,6 +1,9 @@
 # Emacs droppings
 *~
 
+# npm install droppings
+integration-test/**/package-lock.json
+
 # Logs
 logs
 *.log
