@@ -193,7 +193,7 @@ function minterFor(TrustedTypeT) {
     if (!warned) {
       warned = true;
       // eslint-disable-next-line no-console
-      console.warning(
+      console.warn(
         `web-contract-types not authorized to create ${ TrustedTypeT.name
         }.  Maybe check your mintable grants used to initialize node-sec-patterns.`);
     }
