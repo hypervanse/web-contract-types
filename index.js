@@ -17,7 +17,7 @@
 
 'use strict';
 
-require('module-keys/cjs').polyfill(module, require, 'web-contract-types');
+require('module-keys/cjs').polyfill(module, require, module.id);
 
 const { Mintable } = require('node-sec-patterns');
 const { TypedString } = require('template-tag-common');
