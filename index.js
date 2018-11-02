@@ -17,7 +17,7 @@
 
 'use strict';
 
-require('module-keys/cjs').polyfill(module, require, module.id);
+require('module-keys/cjs').polyfill(module, require);
 
 const { Mintable } = require('node-sec-patterns');
 const { TypedString } = require('template-tag-common');
@@ -345,6 +345,7 @@ defineProperties(
 
 // Whitespace followed by a scheme, followed by a scheme specific part, followed by trailing whitespace.
 const SCHEME_AND_REST = /^[\t\n\f\r ]*([^/:?#]+:)?([\s\S]*?)[\t\n\f\r ]*$/;
+
 // URL schemes that we allow in arbitrary strings.
 // This list is kept intentionally short.
 // There may be URL schemes with well-understood security properties that are not on this list.
