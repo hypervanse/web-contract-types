@@ -244,7 +244,7 @@ require('module-keys/cjs').polyfill(module, require, module.id);
 const { Mintable } = require('node-sec-patterns');
 const { TrustedHTML } = require('web-contract-types');
 
-const makeTrustedHTML = require.keys.unbox(
+const makeTrustedHTML = require.moduleKeys.unbox(
     Mintable.minterFor(TrustedHTML),
     () => true,
     String);

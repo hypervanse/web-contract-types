@@ -19,7 +19,7 @@
 
 'use strict';
 
-require('module-keys/cjs').polyfill(module, require, 'web-contract-types/test/test.js');
+require('module-keys/cjs').polyfill(module, require);
 
 const { expect } = require('chai');
 const { describe, it } = require('mocha');
@@ -27,13 +27,13 @@ const { describe, it } = require('mocha');
 const { Mintable } = require('node-sec-patterns');
 const { TrustedHTML, TrustedScript, TrustedResourceURL, TrustedURL } = require('../index.js');
 
-const mintTrustedScript = require.keys.unboxStrict(
+const mintTrustedScript = require.moduleKeys.unboxStrict(
   Mintable.minterFor(TrustedScript),
   () => true);
-const mintTrustedResourceURL = require.keys.unboxStrict(
+const mintTrustedResourceURL = require.moduleKeys.unboxStrict(
   Mintable.minterFor(TrustedResourceURL),
   () => true);
-const mintTrustedURL = require.keys.unboxStrict(
+const mintTrustedURL = require.moduleKeys.unboxStrict(
   Mintable.minterFor(TrustedURL),
   () => true);
 

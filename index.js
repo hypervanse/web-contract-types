@@ -19,7 +19,6 @@
 
 require('module-keys/cjs').polyfill(module, require);
 
-const { keysSymbol } = require('module-keys');
 const { Mintable } = require('node-sec-patterns');
 const { TypedString } = require('template-tag-common');
 
@@ -201,7 +200,7 @@ function minterFor(TrustedTypeT) {
     return `${ x }`;
   }
 
-  return require[keysSymbol].unbox(
+  return require.moduleKeys.unbox(
     Mintable.minterFor(TrustedTypeT),
     () => true,
     singleWarningFallback);
