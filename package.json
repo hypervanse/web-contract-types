@@ -1,6 +1,6 @@
 {
   "name": "web-contract-types",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Contract types for common web application languages: HTML, JS, CSS, URL",
   "main": "index.js",
   "files": [
