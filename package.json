@@ -7,8 +7,8 @@
     "index.js"
   ],
   "dependencies": {
-    "node-sec-patterns": "^3.0.1",
-    "template-tag-common": "^5.0.1"
+    "node-sec-patterns": "^3.0.2",
+    "template-tag-common": "^5.0.2"
   },
   "scripts": {
     "cover": "istanbul cover _mocha",
